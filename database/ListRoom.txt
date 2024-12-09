@@ -1,5 +1,5 @@
 STA101#No View#25.0#available#500000.0#2
-STA102#Park View#25.0#in use#575000.0#2
+STA102#Park View#25.0#available#575000.0#2
 STA103#No View#30.0#available#500000.0#3
 STA104#City View#30.0#available#575000.0#3
 STA105#No View#20.0#available#500000.0#1
@@ -17,7 +17,7 @@ DLX206#Ocean View#35.0#available#1150000.0#3
 DLX207#No View#35.0#available#1000000.0#3
 DLX208#City View#40.0#available#1150000.0#4
 DLX209#Ocean View#35.0#available#1150000.0#3
-DLX210#No View#40.0#available#1000000.0#4
+DLX210#No View#40.0#in use#1000000.0#4
 DLX301#No View#35.0#available#1000000.0#3
 DLX302#Park View#40.0#available#1150000.0#4
 DLX303#Ocean View#35.0#available#1150000.0#3

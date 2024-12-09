@@ -1,0 +1,8 @@
+Booking ID: BK1
+Customer: Hau (0357674497)
+Check-in: 2024-12-09
+Check-out: 2024-12-15
+Employee ID: E002
+No guests.
+Booked Rooms: DLX210 (in use)
+Total Price: 0.00 VND
