@@ -1,9 +1,8 @@
 package List;
-
 import AbstractCore.TypeList;
 
-public class StandarRoomList implements TypeList {
-
+public class DeluxeRoomList implements TypeList {
+    
     @Override
     public void add() {
         throw new UnsupportedOperationException("Not supported yet.");
