@@ -9,7 +9,7 @@ public abstract class Room {
     protected double dienTich;
     protected String status; // Available, In Use, Booked, Under Maintenance
     protected double giaNgay;
-    protected int capacity; // Number of people the room can fit
+    protected int capacity; // Số người ở trong phòng
 
     public static final Map<Integer, Double> DICH_VU_TINH = new HashMap<>();
     static {
@@ -42,7 +42,6 @@ public abstract class Room {
     }
 
     public void addService(Scanner sc) {
-        // Assuming dichVuPhong is a Map<Integer, Double> (service ID and price) in your Room class
         boolean addingServices = true;
     
         while (addingServices) {
@@ -62,9 +61,7 @@ public abstract class Room {
                 case 1:
                 case 2:
                 case 3:
-                    // Assuming dichVuPhong contains the services for the room with service ID and price.
                     if (!dichVuPhong.containsKey(serviceChoice)) {
-                        // Assuming DICH_VU_TINH is a map where keys are service IDs and values are prices
                         dichVuPhong.put(serviceChoice, DICH_VU_TINH.get(serviceChoice));
                         System.out.println("Added service: " + getServiceName(serviceChoice) + " for " + DICH_VU_TINH.get(serviceChoice) + " VND");
                     } else {
@@ -81,9 +78,7 @@ public abstract class Room {
         }
     }
 
-    
-    
-    
+       
 
     public void printServicesUsed() {
         if (dichVuPhong.isEmpty()) {
@@ -98,10 +93,10 @@ public abstract class Room {
 
     public String getServiceName(int serviceId) {
         switch (serviceId) {
-            case 1: return "Laundry";
+            case 1: return "Giat ui";
             case 2: return "Minibar";
-            case 3: return "Morning Wake-up Call";
-            default: return "Unknown Service";
+            case 3: return "Bao thuc sang";
+            default: return "Dich vu khong kha thi";
         }
     }
     public String getRoomId() { return id; }
@@ -134,7 +129,7 @@ public abstract class Room {
         this.dienTich = Double.parseDouble(str[2]);
         this.status = str[3];
         this.giaNgay = Double.parseDouble(str[4]);
-        this.capacity = Integer.parseInt(str[5]); // Reading capacity from the file
+        this.capacity = Integer.parseInt(str[5]); 
     }
 
     public String mergeInformationToFile() {

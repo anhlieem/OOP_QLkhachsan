@@ -54,7 +54,7 @@ public class Booking {
             guestList.add(new Person(name, phone));
             return true;
         } else {
-            System.out.println("Cannot add guest. Total guests exceed room capacity.");
+            System.out.println("Phong khong du chua!!");
             return false;
         }
     }
@@ -101,7 +101,7 @@ public class Booking {
                     if (foundRoom != null) {
                         addRoom(foundRoom);
                     } else {
-                        System.err.println("Could not find room with ID: " + roomID);
+                        System.err.println("Khong the tim thay phong" + roomID);
                     }
                 }
             }

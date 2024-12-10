@@ -16,49 +16,56 @@ import java.util.Scanner;
 
 public class Main {
     private static int bookingCounter = 1; // Booking ID counter
-    
+
     public static void main(String[] args) {
         List<Room> allRooms = new ArrayList<>();
         List<Booking> allBookings = new ArrayList<>();
         List<String[]> employees = new ArrayList<>();
         Scanner sc = new Scanner(System.in);
-
+    
         // Add employees
         employees.add(new String[]{"E001", "Ngo Gia Bao"});
         employees.add(new String[]{"E002", "Le Minh Huy"});
         employees.add(new String[]{"E003", "Huu Hau"});
         employees.add(new String[]{"E004", "Tran Thanh"});
-
-        // Display current time
-        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-        Date currentTime = new Date();
-        System.out.println("\u001B[33mWelcome!\u001B[0m");
-        System.out.println("\u001B[33mCurrent time: " + formatter.format(currentTime) + "\u001B[0m");
-
-        // Load rooms and bookings
+        
         loadRoomData(allRooms);
         loadBookingData(allBookings, allRooms);
 
+        // Login system
+        boolean loginSuccessful = performLogin(employees, sc);
+        if (!loginSuccessful) {
+            System.out.println("Sai qua nhieu lan! Vui long thu lai sau!");
+            return;
+        }
+    
+        // Display current time and employee info
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm dd/MM/yyyy");
+        Date currentTime = new Date();
+        System.out.println("\u001B[33mWelcome, " + employeeName + "!\u001B[0m");
+        System.out.println("\u001B[33mHien tai: " + formatter.format(currentTime) + "\u001B[0m");
+    
         // Main menu loop
         boolean running = true;
         while (running) {
-            System.out.println("\n+---------------------------+");
-            System.out.println("|           MENU            |");
-            System.out.println("+---------------------------+");
-            System.out.println("| 1. Print Room Table       |");
-            System.out.println("| 2. Add Booking            |");
-            System.out.println("| 3. Print Bookings         |");
-            System.out.println("| 4. Add Service to Room    |");
-            System.out.println("| 0. Exit                   |");
-            System.out.println("+---------------------------+");
+            System.out.println("\n+==============================+");
+            System.out.println("|             MENU             |");
+            System.out.println("+==============================+");
+            System.out.println("| 1. In Danh Sach Phong        |");
+            System.out.println("| 2. Them Booking              |");
+            System.out.println("| 3. Quan ly Bookings          |");
+            System.out.println("| 4. Them dich vu vao phong    |");
+            System.out.println("| 0. Exit                      |");
+            System.out.println("+------------------------------+");
             System.out.print("Choose an option: ");
-
+    
             String choice = sc.nextLine();
             switch (choice) {
                 case "1":
                     printRoomTable(allRooms);
                     break;
                 case "2":
+                    // Pass employeeId to the addBooking method
                     addBooking(allBookings, allRooms, employees, sc);
                     break;
                 case "3":
@@ -68,88 +75,153 @@ public class Main {
                     addServiceToRoom(allRooms, sc);
                     break;
                 case "0":
-                    System.out.println("Exiting program. Goodbye!");
+                    System.out.println("Ket thuc chuong trinh. Hen gap lai!");
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Loi lua chon! Vui long chon lai.");
             }
         }
         sc.close();
-
+    
         // Save data before exiting
         saveData(allRooms, allBookings);
     }
 
-    private static void addBooking(List<Booking> allBookings, List<Room> allRooms, List<String[]> employees, Scanner sc) {
-        String bookingId = "BK" + bookingCounter++; // Generate automatic Booking ID
+// Global variables to store the logged-in employee's ID and name
+static String employeeId = "";
+static String employeeName = "";
 
-        System.out.println("Enter Customer Name:");
-        String customerName = sc.nextLine();
+public static boolean performLogin(List<String[]> employees, Scanner sc) {
+    int attempts = 3;
+    while (attempts > 0) {
+        System.out.print("Nhap vao ID nhan vien: ");
+        String enteredId = sc.nextLine();
+        System.out.print("Nhap vao mat khau: ");
+        String enteredPassword = sc.nextLine();
 
-        System.out.println("Enter Customer Phone:");
-        String customerPhone = sc.nextLine();
-
-        System.out.println("Enter Check-in Date (yyyy-MM-dd):");
-        String checkInDate = sc.nextLine();
-
-        System.out.println("Enter Check-out Date (yyyy-MM-dd):");
-        String checkOutDate = sc.nextLine();
-
-        System.out.println("Assign an Employee (ID):");
         for (String[] employee : employees) {
-            System.out.println(" - " + employee[0] + ": " + employee[1]);
-        }
-        String employeeId = sc.nextLine();
-
-        Booking booking = new Booking(bookingId, checkInDate, checkOutDate, customerName, customerPhone, employeeId);
-
-        System.out.println("Available Rooms:");
-        printRoomTable(allRooms);
-
-        System.out.println("Enter Room IDs to book (separated by commas):");
-        String[] roomIds = sc.nextLine().split(",");
-        for (String roomId : roomIds) {
-            roomId = roomId.trim();
-            Room room = findRoomById(roomId, allRooms);
-            if (room != null && Booking.isRoomAvailable(roomId, checkInDate, checkOutDate, allBookings)) {
-                booking.addRoom(room);
-            } else {
-                System.out.println("Room " + roomId + " is not available or does not exist.");
+            if (employee[0].equalsIgnoreCase(enteredId) && enteredPassword.equals("123")) {
+                employeeId = employee[0]; // Store employee ID globally
+                employeeName = employee[1]; // Store employee name globally
+                return true; // Successful login
             }
         }
 
-        System.out.println("Enter the amount of the people will stay:");
-        
+        attempts--;
+        System.out.println("Sai ID nhan vien hoac mat khau! Ban con " + attempts + " luot thu.");
+    }
+    return false; // Failed login after 3 attempts
+}
 
-        allBookings.add(booking);
-        System.out.println("Booking successfully added!");
 
-        // Update room statuses after adding the booking using Booking class's method
-        Booking.updateRoomStatuses(allBookings, allRooms);
 
-        // Save the updated room data to ListRoom.txt
-        saveData(allRooms, allBookings);
+
+private static void addBooking(List<Booking> allBookings, List<Room> allRooms, List<String[]> employees, Scanner sc) {
+    String bookingId = "BK" + bookingCounter++; // Generate automatic Booking ID
+
+    System.out.println("Nhap vao ten Khach hang: ");
+    String customerName = sc.nextLine();
+
+    System.out.println("Nhap vao SDT Khach hang: ");
+    String customerPhone = sc.nextLine();
+
+    System.out.println("Nhap vao ngay Check-in (yyyy-MM-dd):");
+    String checkInDate = sc.nextLine();
+
+    System.out.println("Nhap vao ngay Check-out (yyyy-MM-dd):");
+    String checkOutDate = sc.nextLine();
+
+    // Use the globally stored employeeId and employeeName
+    Booking booking = new Booking(bookingId, checkInDate, checkOutDate, customerName, customerPhone, employeeId);
+
+    System.out.println("Danh sach cac phong co the dat:");
+    printRoomTable(allRooms);
+
+    System.out.println("Nhap vao (cac) so phong (ngan cach nhau bang dau ','):");
+    String[] roomIds = sc.nextLine().split(",");
+    for (String roomId : roomIds) {
+        roomId = roomId.trim();
+        Room room = findRoomById(roomId, allRooms);
+        if (room != null && Booking.isRoomAvailable(roomId, checkInDate, checkOutDate, allBookings)) {
+            booking.addRoom(room);
+        } else {
+            System.out.println("Phong " + roomId + " khong kha dung hoac khong ton tai.");
+        }
     }
 
+    // Prompt user to add guests
+    System.out.println("Nhap vao so luong Khach luu tru");
+    int numberOfGuests = Integer.parseInt(sc.nextLine());
+
+    for (int i = 0; i < numberOfGuests; i++) {
+        System.out.println("Nhap ten Khach " + (i + 1) + ":");
+        String guestName = sc.nextLine();
+        System.out.println("Nhap so dien thoai Khach " + (i + 1) + ":");
+        String guestPhone = sc.nextLine();
+
+        // Add the guest to the booking
+        boolean addedSuccessfully = booking.addGuest(guestName, guestPhone);
+        if (!addedSuccessfully) {
+            System.out.println("Khong du cho cho " + guestName + " Khach luu tru.");
+        }
+    }
+
+    allBookings.add(booking);
+    System.out.println("Booking thanh cong!");
+
+    // Update room statuses after adding the booking using Booking class's method
+    Booking.updateRoomStatuses(allBookings, allRooms);
+
+    // Save the updated room data to ListRoom.txt
+    saveData(allRooms, allBookings);
+}
+
+
+    private static List<Room> getAvailableRoomsForDates(List<Room> allRooms, String checkInDate, String checkOutDate, List<Booking> allBookings) {
+        List<Room> availableRooms = new ArrayList<>();
+    
+        for (Room room : allRooms) {
+            boolean isAvailable = true;
+    
+            // Check if the room is already booked for the given period
+            for (Booking booking : allBookings) {
+                if (Booking.isRoomAvailable(room.getRoomId(), checkInDate, checkOutDate, allBookings)) {
+                    continue;
+                } else {
+                    isAvailable = false;
+                    break;
+                }
+            }
+    
+            if (isAvailable) {
+                availableRooms.add(room);
+            }
+        }
+    
+        return availableRooms;
+    }
+    
+    
+
     private static void addServiceToRoom(List<Room> allRooms, Scanner sc) {
-        System.out.print("Enter Room ID to add services: ");
+        System.out.print("Nhap vao ma phong can them dich vu: ");
         String roomId = sc.nextLine();
     
         // Find the room by its ID
         Room room = findRoomById(roomId, allRooms);
         if (room == null) {
-            System.out.println("Room with ID " + roomId + " not found.");
+            System.out.println("Phong " + roomId + " khong ton tai!");
             return;
         }
     
         // Call the addService method of the Room class to allow adding services
-        System.out.println("You have selected Room: " + roomId);
+        System.out.println("Ban da chon phong: " + roomId);
         room.addService(sc);  // Pass the Scanner to the room's addService method
     }
 
     private static void loadRoomData(List<Room> allRooms) {
-        List<String> roomData = FileUtil.readFile("./database/ListRoom.txt");
+        List<String> roomData = FileUtil.readFile("OOP_QLkhachsan/database/ListRoom.txt");
         for (String line : roomData) {
             Room room = parseRoom(line);
             if (room != null) {
@@ -159,7 +231,7 @@ public class Main {
     }
 
     private static void loadBookingData(List<Booking> allBookings, List<Room> allRooms) {
-        List<String> bookingData = FileUtil.readFile("./database/ListBooking.txt");
+        List<String> bookingData = FileUtil.readFile("OOP_QLkhachsan/database/ListBooking.txt");
         for (String line : bookingData) {
             Booking booking = new Booking();
             booking.getLineFromFile(line, allRooms);
@@ -172,15 +244,15 @@ public class Main {
     private static void manageBookings(List<Booking> allBookings, Scanner sc) {
         boolean running = true;
         while (running) {
-            System.out.println("\n+---------------------------+");
-            System.out.println("|       Booking Menu        |");
-            System.out.println("+---------------------------+");
-            System.out.println("| 1. View All Bookings      |");
-            System.out.println("| 2. Search Booking by ID   |");
-            System.out.println("| 3. Search by Customer     |");
-            System.out.println("| 0. Return                 |");
-            System.out.println("+---------------------------+");
-            System.out.print("Choose an option: ");
+            System.out.println("\n+====================================+");
+            System.out.println("|           Booking Menu             |");
+            System.out.println("+====================================+");
+            System.out.println("| 1. Xem tat ca Booking              |");
+            System.out.println("| 2. Tim kiem theo ID Booking        |");
+            System.out.println("| 3. Tim kiem theo SDT Khach hang    |");
+            System.out.println("| 0. Tro lai                         |");
+            System.out.println("+------------------------------------+");
+            System.out.print("Moi ban nhap lua chon: ");
 
             String choice = sc.nextLine();
             switch (choice) {
@@ -190,7 +262,7 @@ public class Main {
                     }
                     break;
                 case "2":
-                    System.out.println("Enter Booking ID:");
+                    System.out.println("Nhap vao ID cua Booking: ");
                     String bookingId = sc.nextLine();
                     for (Booking booking : allBookings) {
                         if (booking.getBookingId().equalsIgnoreCase(bookingId)) {
@@ -200,7 +272,7 @@ public class Main {
                     }
                     break;
                 case "3":
-                    System.out.println("Enter Customer Phone:");
+                    System.out.println("Nhap vao SDT cua Khach hang: ");
                     String phone = sc.nextLine();
                     for (Booking booking : allBookings) {
                         if (booking.getCustomer().getPhone().equals(phone)) {
@@ -212,7 +284,7 @@ public class Main {
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid choice. Please try again.");
+                    System.out.println("Loi lua chon! Vui long thu lai.");
             }
         }
     }
@@ -233,7 +305,7 @@ public class Main {
                     room = new Suite("", 0, "available", 0, 0);
                     break;
                 default:
-                    System.err.println("Unknown room type: " + line);
+                    System.err.println("Khong ro loai phong " + line);
                     return null;
             }
 
@@ -248,6 +320,16 @@ public class Main {
         }
     }
 
+
+    public static Date parseDate(String dateString) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            return sdf.parse(dateString);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private static Room findRoomById(String roomID, List<Room> allRooms) {
         for (Room room : allRooms) {
             if (room.getRoomId().equalsIgnoreCase(roomID)) {
@@ -258,9 +340,9 @@ public class Main {
     }
 
     private static void printRoomTable(List<Room> allRooms) {
-        System.out.println("+--------+----------------+--------+-------------+-----------+--------------+");
+        System.out.println("+========+================+========+=============+===========+==============+");
         System.out.println("| RoomID | View           | Area   | Status      | Capacity  | Price        |");
-        System.out.println("+--------+----------------+--------+-------------+-----------+--------------+");
+        System.out.println("+========+================+========+=============+===========+==============+");
 
         for (Room room : allRooms) {
             String statusColor;
@@ -291,12 +373,12 @@ public class Main {
         for (Room room : allRooms) {
             roomStrings.add(room.mergeInformationToFile()); // Convert each room to a string
         }
-        FileUtil.writeFile("./database/ListRoom.txt", roomStrings);
+        FileUtil.writeFile("OOP_QLkhachsan/database/ListRoom.txt", roomStrings);
 
         List<String> bookingStrings = new ArrayList<>();
         for (Booking booking : allBookings) {
-            bookingStrings.add(booking.toString()); // Convert each booking to a string
+            bookingStrings.add(booking.mergeInformationToFile()); // Convert each booking to a string
         }
-        FileUtil.writeFile("./database/ListBooking.txt", bookingStrings);
+        FileUtil.writeFile("OOP_QLkhachsan/database/ListBooking.txt", bookingStrings);
     }
 }

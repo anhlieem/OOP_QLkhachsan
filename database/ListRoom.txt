@@ -1,5 +1,5 @@
-STA101#No View#25.0#available#500000.0#2
-STA102#Park View#25.0#in use#575000.0#2
+STA101#No View#25.0#in use#500000.0#2
+STA102#Park View#25.0#available#575000.0#2
 STA103#No View#30.0#available#500000.0#3
 STA104#City View#30.0#available#575000.0#3
 STA105#No View#20.0#available#500000.0#1
@@ -26,5 +26,5 @@ DLX305#City View#35.0#available#1150000.0#3
 SUT401#Park View#50.0#available#3000000.0#5
 SUT402#Ocean View#55.0#available#3000000.0#5
 SUT403#City View#50.0#available#3000000.0#5
-SUT404#Penthouse View#45.0#available#3000000.0#4
+SUT404#Penthouse View#45.0#in use#3000000.0#4
 SUT405#Park View#55.0#available#3000000.0#5
